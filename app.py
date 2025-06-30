@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request, jsonify
 import hashlib
 import base64
@@ -39,7 +40,13 @@ def decrypt_route():
     try:
         cipher = AESCipher(key)
         plaintext = cipher.decrypt_string(ciphertext)
-        return jsonify({"plaintext": plaintext})
+        # Thử parse plaintext thành JSON object
+        try:
+            parsed = json.loads(plaintext)
+            return jsonify(parsed)
+        except Exception:
+            # Nếu không phải JSON, trả về dưới dạng text cũ
+            return jsonify({"plaintext": plaintext})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
